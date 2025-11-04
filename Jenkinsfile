@@ -1,8 +1,8 @@
 pipeline {
   environment {
-    ARGO_SERVER = '34.44.182.37:32100'
+    # ARGO_SERVER = '34.44.182.37:32100'
     GITHUB_TOKEN = credentials('github-token')
-    DEV_URL = 'http://34.44.182.37:30080/'
+    DEV_URL = 'http://10.168.20.128:9080/'
   }
   agent {
     kubernetes {
