@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project demonstrates as sample spring application with complete **DevSecOps workflow** built on top of a Kubernetes cluster using **Google Kubernetes Engine (GKE)**. It covers automated Continuous Integration (CI), security scanning, and Continuous Delivery (CD) using Jenkins pipeline and aaplication security best practices.
+This project demonstrates as sample spring application with complete **DevSecOps workflow** built on top of a Kubernetes cluster using **Google Kubernetes Engine (GKE)**. It covers automated Continuous Integration (CI), security scanning, and Continuous Delivery (CD) using Jenkins pipeline and application security best practices.
 
 ## Key Features
 
