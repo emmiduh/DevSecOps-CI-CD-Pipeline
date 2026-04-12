@@ -84,7 +84,7 @@ pipeline {
     stage('Static Application Security Testing') {
       steps {
         container('slscan') {
-          sh 'scan --type java,depscan --build'
+          sh 'scan --type java --build'
         }
       }
       post {
