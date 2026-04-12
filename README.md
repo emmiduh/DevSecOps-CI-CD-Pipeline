@@ -1,20 +1,27 @@
-# DevSecOps CI/CD Pipeline on Kubernetes with Jenkins, Helm, and ArgoCD
+# Nexus FinTech: DevSecOps CI/CD Pipeline on Kubernetes with Jenkins, Helm, and ArgoCD
 
 ## Overview
 
-This project demonstrates as sample spring application with complete **DevSecOps workflow** built on top of a Kubernetes cluster using **Google Kubernetes Engine (GKE)**. It covers automated Continuous Integration (CI), security scanning, and Continuous Delivery (CD) using Jenkins pipeline and application security best practices.
+This repository houses **Nexus FinTech**, an API-driven financial security dashboard, and the comprehensive **DevSecOps workflow** built to secure and deploy it. 
+Running on top of a Kubernetes cluster, this project demonstrates a modern, automated Continuous Integration (CI) and Continuous Delivery (CD) lifecycle. It integrates rigorous security scanning at every stage of the pipeline—from source code to live deployment—using Jenkins, ArgoCD, and industry-standard open-source security tools.
+*Note: This project is a heavily refactored hard fork, transitioning from a basic server-side rendered application to a multi-tier API architecture with a Tailwind CSS frontend.*
 
 ## Key Features
 
-### Kubernetes Setup
-- Provisioned a **GKE Cluster** on Google Cloud.
-- Configured local `kubectl` and `gcloud` for secure cluster access.
-- Installed and managed applications using **Helm**.
+### The Application (Nexus FinTech)
+- **Backend:** Java Spring Boot REST API providing live mock transaction streams and system health data.
+- **Frontend:** Responsive, dark-mode dashboard built with HTML, Vanilla JavaScript, and Tailwind CSS.
+- **Containerized:** Packaged into an optimized OCI-compliant image using multi-stage builds.
+  
+### Kubernetes & Infrastructure
+- Provisioned on a Kubernetes cluster with secure local `kubectl` access.
+- Infrastructure and CI/CD tooling managed via **Helm**.
+- Local path provisioning for persistent volumes.
 
 ### Jenkins CI/CD Pipeline
-- Installed Jenkins using Helm on Kubernetes.
-- Configured pipelines with `Jenkinsfile` for automated builds.
-- Used **Kaniko** for container image building and publishing (without Docker daemon).
+- **Pipeline as Code:** Orchestrated via a highly structured, declarative `Jenkinsfile`.
+- **Ephemeral Build Agents:** Jenkins dynamically spins up isolated Kubernetes Pods (defined in `build-agent.yaml`) for each build stage.
+- **Daemonless Building:** Uses **Kaniko** for secure container image building and publishing inside Kubernetes without exposing the Docker daemon.
 
 ### Jenkins setup
 
@@ -55,12 +62,15 @@ This project demonstrates as sample spring application with complete **DevSecOps
 
 Hint: URL (if you have followed the exact steps) http://dependency-track-apiserver.dependency-track.svc.cluster.local
 
-### Security Integration (DevSecOps)
-- Integrated **OWASP Dependency-Check** for Software Component Analysis (SCA).
-- Scanned open-source dependencies for license compliance and vulnerabilities.
-- Generated a **Software Bill of Materials (SBOM)**.
-- Used **Bandit** to analyze Python projects for security issues.
-- Included **Spring Boot** dependency upgrades to fix CVEs.
+### Security Integration(The "Sec" in DevSecOps)
+- **SAST (Static Application Security Testing):** Code analysis using ShiftLeft.
+- **Secret Scanning:** TruffleHog integration to prevent hardcoded passwords or API keys.
+- **SCA (Software Component Analysis):** OWASP Dependency-Check to scan open-source libraries for known vulnerabilities.
+- **SBOM Generation:** CycloneDX generates a Software Bill of Materials, published to a Dependency-Track server.
+- **License Compliance:** OSS License Finder ensures third-party dependencies meet legal requirements.
+- **Image Linting & Scanning:** Dockle for best-practice linting and Trivy for deep container vulnerability scanning.
+- **Manifest Scanning:** Kubesec analyzes Kubernetes deployment YAMLs for misconfigurations.
+- **DAST (Dynamic Application Security Testing):** OWASP ZAP automatically attacks the deployed Dev environment to find runtime vulnerabilities.
 
 ### Container Image Hardening
 - Used **Dockle** to lint container images for security best practices.
@@ -68,7 +78,7 @@ Hint: URL (if you have followed the exact steps) http://dependency-track-apiserv
 - Optimized Dockerfile using **multi-stage builds**.
 - Added non-root user and health checks for secure container practices.
 
-### Continuous Deployment with ArgoCD
+### Continuous Deployment (GitOps)
 - Installed and configured **ArgoCD** for GitOps-based deployments.
 - Set up **CLI access and RBAC** to manage and secure ArgoCD.
 - Configured Jenkins to **trigger ArgoCD deployments** automatically after successful builds.
@@ -76,29 +86,30 @@ Hint: URL (if you have followed the exact steps) http://dependency-track-apiserv
 
 ## Tools & Technologies
 
-| Category           | Tools / Platforms                    |
-|--------------------|--------------------------------------|
-| Cloud              | Google Cloud Platform (GKE)          |
-| CI/CD              | Jenkins, Jenkinsfile, Kaniko         |
-| GitOps/CD          | ArgoCD                               |
-| Kubernetes         | GKE, Helm, kubectl                   |
-| Security Scanning  | OWASP-Dependency-Check, Trivy, ZAP,  |
-|                    | Dockle 				    |
-| Programming        | Java (Spring Boot), Python           |
-| Containerization   | Docker, Dockerfile (multi-stage)     |
+| Category           | Tools / Platforms                                    |
+|--------------------|------------------------------------------------------|
+| Cloud              | Google Cloud Platform (GKE), Azure, AWS              |
+| CI/CD              | Jenkins, Jenkinsfile, Kaniko                         |
+| GitOps/CD          | ArgoCD                                               |
+| Kubernetes         | K8s, Helm, kubectl                                   |
+| Security (App)     | ShiftLeft (SAST), OWASP ZAP (DAST), TruffleHog       |
+| Security (Dep)     | OWASP Dependency-Check, CycloneDX, Dependency-Track 	|
+| Security (Inf)     | Trivy, Dockle, Kubesec                   				    |
+| Programming        | Java (Spring Boot), JavaScript, Tailwind CSS         |
+| Containerization   | Docker, Dockerfile (multi-stage)                     |
 
 
-Refer the below screenshot for the stages in the pipeline
+## 📸 Project Visuals
 
-##### Pipeline View
+##### Nexus FinTech Dashboard (Live App)
+![Nexus Dashboard](imgs/Nexus_Dashboard.png)
 
+##### CI/CD Pipeline View (Blue Ocean)
 ![Pipeline View](imgs/Secure_Pipeline_1.png)
 
 ##### ArgCD Dashboard
-
 ![Stage View](imgs/Secure_Pipeline_2.png)
 
 ##### Dependency Track
-
 ![Dependency Track View](imgs/Dependency_Track.png)
 
