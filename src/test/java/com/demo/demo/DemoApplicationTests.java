@@ -8,6 +8,7 @@ class DemoApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// This just verifies the app can start without crashing.
 	}
 
 }

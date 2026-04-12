@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus FinTech | SecOps Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased p-8">
+    
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center border-b border-gray-700 pb-6 mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-blue-400">Nexus FinTech</h1>
+                <p class="text-gray-400 text-sm mt-1">Global Transaction & Security Monitor</p>
+            </div>
+            <div class="text-right" id="system-status">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-900 text-green-300">
+                    <svg class="mr-1.5 h-2 w-2 text-green-400" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" /></svg>
+                    System Secure
+                </span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 shadow-lg">
+                <h3 class="text-gray-400 text-sm font-semibold uppercase tracking-wider">Active Pipeline</h3>
+                <p class="text-2xl font-bold mt-2">DevSecOps-CI</p>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 shadow-lg">
+                <h3 class="text-gray-400 text-sm font-semibold uppercase tracking-wider">Release Version</h3>
+                <p class="text-2xl font-bold mt-2 text-blue-400" id="version-display">Loading...</p>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 shadow-lg">
+                <h3 class="text-gray-400 text-sm font-semibold uppercase tracking-wider">Blocked Threats</h3>
+                <p class="text-2xl font-bold mt-2 text-red-400">1,204</p>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-700">
+                <h3 class="text-lg font-medium text-white">Live Transaction Feed</h3>
+            </div>
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-gray-900">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Transaction ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Risk Level</th>
+                    </tr>
+                </thead>
+                <tbody id="transaction-body" class="bg-gray-800 divide-y divide-gray-700">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Fetch System Status
+        fetch('/api/system')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('version-display').innerText = data.version;
+            });
+
+        // Fetch Transactions
+        fetch('/api/transactions')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('transaction-body');
+                data.forEach(txn => {
+                    let riskColor = txn.risk === 'CRITICAL' ? 'text-red-400 font-bold' : (txn.risk === 'MEDIUM' ? 'text-yellow-400' : 'text-green-400');
+                    let statusColor = txn.status === 'BLOCKED' ? 'bg-red-900 text-red-300' : 'bg-gray-700 text-gray-300';
+                    
+                    let row = `<tr class="hover:bg-gray-750 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${txn.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">$${txn.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor}">${txn.status}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm ${riskColor}">${txn.risk}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            });
+    </script>
+</body>
+</html>
