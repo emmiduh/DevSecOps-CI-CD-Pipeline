@@ -113,13 +113,13 @@ pipeline {
             }
           }
         }
-        // stage('OCI Image BnP') {
-        //   steps {
-        //     container('kaniko') {
-        //       sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/emmiduh93/dso-demo'
-        //     }
-        //   }
-        // }
+        stage('OCI Image BnP') {
+          steps {
+            container('kaniko') {
+              sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
+            }
+          }
+        }
       }
     }
 
@@ -128,14 +128,14 @@ pipeline {
  //        stage('Image Linting') {
 	//   steps {
 	//     container('docker-tools') {
-	//       sh 'dockle --timeout 600s docker.io/emmiduh93/dso-demo'
+	//       sh 'dockle --timeout 600s docker.io/emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
 	//     }
 	//   }
 	// }
 	// stage('Image Scan') {
 	//   steps {
 	//     container('docker-tools') {
-	//       sh 'trivy image --timeout 10m --exit-code 1 emmiduh93/dso-demo'
+	//       sh 'trivy image --timeout 10m --exit-code 1 emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
 	//     }
 	//   }
 	// }
