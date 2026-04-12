@@ -35,8 +35,8 @@ pipeline {
 		  }
 		  post {
 		    always {
-		      archiveArtifacts allowEmptyArchive: true, artifacts: 'target/dependency-check-report.html', fingerprint: true, onlyIfSuccessful: true
-		      // dependencyCheckPublisher pattern: 'report.xml'
+		      archiveArtifacts allowEmptyArchive: true, artifacts: 'target/dependency-check-report.html', fingerprint: true
+		      dependencyCheckPublisher pattern: 'report.xml'
 		    }
 	  	  }
 		}
