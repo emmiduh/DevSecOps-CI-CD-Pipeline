@@ -4,7 +4,7 @@ metadata:
   creationTimestamp: null
   labels:
     app: dso-demo
-  name: dso-demo
+  name: nexusfintechapp
 spec:
   replicas: 1
   selector:
@@ -26,7 +26,7 @@ spec:
       labels:
         app: dso-demo
     spec:
-      serviceAccountName: dso-demo
+      serviceAccountName: nexusfintechapp
       volumes:
         - name: tmp
           emptyDir: {}
