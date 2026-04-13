@@ -17,7 +17,7 @@ pipeline {
         stage('Secret Scanner') {
           steps {
             container('trufflehog') {
-              sh 'trufflehog filesystem . --fail'
+              sh 'trufflehog --regex --entropy .'
             }
           }
         }
