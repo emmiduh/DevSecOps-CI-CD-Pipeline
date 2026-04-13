@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    ARGO_SERVER = '158.158.43.58:32100'
+    ARGO_SERVER = 'argocd-server.argocd.svc.cluster.local:443'
     GITHUB_TOKEN = credentials('github_jenkins_token')
     DEV_URL = 'http://158.158.43.58:30080/'
   }
