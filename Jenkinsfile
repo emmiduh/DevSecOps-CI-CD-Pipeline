@@ -148,11 +148,11 @@ pipeline {
       steps {
         container('docker-tools') {
           sh '''
-            sed -i 's|image: emmiduh93/nexus-fintech:.*|image: emmiduh93/nexus-fintech:${env.BUILD_NUMBER}|g' deploy/dso-demo-deploy.yaml
+            sed -i "s|image: emmiduh93/nexus-fintech:.*|image: emmiduh93/nexus-fintech:${BUILD_NUMBER}|g" deploy/dso-demo-deploy.yaml
             git config user.email "jenkins-bot@example.com"
             git config user.name "Jenkins CI Bot"
             git add deploy/dso-demo-deploy.yaml
-            git commit -m "chore: update image tag to ${env.BUILD_NUMBER} [skip ci]"
+            git commit -m "chore: update image tag to ${BUILD_NUMBER} [skip ci]"
             git push https://${GITHUB_TOKEN}@github.com/emmiduh/DevSecOps-CI-CD-Pipeline.git HEAD:main
           '''
         }
