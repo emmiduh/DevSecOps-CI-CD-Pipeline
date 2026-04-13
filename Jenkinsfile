@@ -81,18 +81,8 @@ pipeline {
 	      }
 	    }
 	  }
-	
-        stage('Unit Tests') {
-          steps {
-            container('maven') {
-              sh 'mvn test'
-            }
-          }
-        }
-      }
-    }
 
-    stage('Static Application Security Testing') {
+		  stage('Static Application Security Testing') {
       steps {
         container('slscan') {
           sh 'scan --type java --build'
@@ -101,6 +91,16 @@ pipeline {
       post {
         success {
           archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint: true, onlyIfSuccessful: true
+        }
+      }
+    }
+	
+        stage('Unit Tests') {
+          steps {
+            container('maven') {
+              sh 'mvn test'
+            }
+          }
         }
       }
     }
