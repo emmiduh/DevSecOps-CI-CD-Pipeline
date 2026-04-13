@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    // ARGO_SERVER = '34.44.182.37:32100'
+    ARGO_SERVER = '158.158.43.58:32100'
     GITHUB_TOKEN = credentials('github_jenkins_token')
     // DEV_URL = 'http://10.168.20.128:9080/'
   }
@@ -12,6 +12,17 @@ pipeline {
     }
   }
   stages {
+	stage('Repo Scans') {
+      parallel {
+        stage('Secret Scanner') {
+          steps {
+            container('trufflehog') {
+              sh 'trufflehog filesystem . --fail'
+            }
+          }
+        }
+      }
+    }
     stage('Build') {
       parallel {
         stage('Compile') {
@@ -96,13 +107,6 @@ pipeline {
 
 	stage('Package') {
       parallel {
-        stage('Create Jarfile') {
-          steps {
-            container('maven') {
-              sh 'mvn package -DskipTests'
-            }
-          }
-        }
         stage('OCI Image BnP') {
           steps {
             container('kaniko') {
@@ -113,24 +117,24 @@ pipeline {
       }
     }
 
- //    stage('Image Analysis') {
- //      parallel {
- //        stage('Image Linting') {
-	//   steps {
-	//     container('docker-tools') {
-	//       sh 'dockle --timeout 600s docker.io/emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
-	//     }
-	//   }
-	// }
-	// stage('Image Scan') {
-	//   steps {
-	//     container('docker-tools') {
-	//       sh 'trivy image --timeout 10m --exit-code 1 emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
-	//     }
-	//   }
-	// }
- //      }
- //    }
+    stage('Image Analysis') {
+      parallel {
+        stage('Image Linting') {
+	  steps {
+	    container('docker-tools') {
+	      sh 'dockle --timeout 600s docker.io/emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
+	    }
+	  }
+	}
+	stage('Image Scan') {
+	  steps {
+	    container('docker-tools') {
+	      sh 'trivy image --timeout 10m --exit-code 1 emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
+	    }
+	  }
+	}
+      }
+    }
 
  //    stage('Scan k8s Deploy Code') {
  //      steps {
@@ -141,15 +145,15 @@ pipeline {
  //    }
 
     stage('Deploy to Dev') {
-      // environment {
-      //   AUTH_TOKEN = credentials('argocd-jenkins-deployer-token')  
-      // }
+       environment {
+         AUTH_TOKEN = credentials('argocd-jenkins-deployer-token')  
+       }
       steps {
 		  sh "echo done"
-   //      container('docker-tools') {
-   //        sh 'docker run -t schoolofdevops/argocd-cli argocd app sync dso-demo --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN'
-	  // sh 'docker run -t schoolofdevops/argocd-cli argocd app wait dso-demo --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN'
-   //      }
+         container('docker-tools') {
+           sh 'docker run -t schoolofdevops/argocd-cli argocd app sync dso-demo --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN'
+	  	   sh 'docker run -t schoolofdevops/argocd-cli argocd app wait dso-demo --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN'
+         }
       }
     }
     
