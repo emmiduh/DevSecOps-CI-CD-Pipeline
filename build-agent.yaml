@@ -30,7 +30,7 @@ spec:
         - mountPath: /tmp/trivycache/
           name: trivycache
     - name: trufflehog
-      image: rmkanda/trufflehog
+      image: trufflesecurity/trufflehog:latest
       command:
         - cat
       tty: true
