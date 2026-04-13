@@ -129,20 +129,35 @@ pipeline {
 	stage('Image Scan') {
 	  steps {
 	    container('docker-tools') {
-	      sh "trivy image --timeout 10m --exit-code 1 emmiduh93/nexus-fintech:${env.BUILD_NUMBER}"
+	      sh "GITHUB_TOKEN= trivy image --timeout 10m --exit-code 1 emmiduh93/nexus-fintech:${env.BUILD_NUMBER}"
 	    }
 	  }
 	}
       }
     }
 
- //    stage('Scan k8s Deploy Code') {
- //      steps {
-	// container('docker-tools') {
-	//   sh 'kubesec scan deploy/dso-demo-deploy.yaml'
-	// }
- //      }
- //    }
+    stage('Scan k8s Deploy Code') {
+      steps {
+	container('docker-tools') {
+	  sh 'kubesec scan deploy/dso-demo-deploy.yaml'
+	}
+      }
+    }
+
+	stage('Update GitOps Repo') {
+      steps {
+        container('docker-tools') {
+          sh """
+            sed -i 's|image: emmiduh93/nexus-fintech:.*|image: emmiduh93/nexus-fintech:${env.BUILD_NUMBER}|g' deploy/dso-demo-deploy.yaml
+            git config user.email "jenkins-bot@example.com"
+            git config user.name "Jenkins CI Bot"
+            git add deploy/dso-demo-deploy.yaml
+            git commit -m "chore: update image tag to ${env.BUILD_NUMBER} [skip ci]"
+            git push https://${GITHUB_TOKEN}@github.com/emmiduh93/DevSecOps-CI-CD-Pipeline.git HEAD:main
+          """
+        }
+      }
+    }
 
     stage('Deploy to Dev') {
        environment {
@@ -151,8 +166,8 @@ pipeline {
       steps {
 		  sh "echo done"
          container('docker-tools') {
-           sh 'docker run -t schoolofdevops/argocd-cli argocd app sync dso-demo --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN'
-	  	   sh 'docker run -t schoolofdevops/argocd-cli argocd app wait dso-demo --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN'
+           sh 'docker run -t schoolofdevops/argocd-cli argocd app sync nexusfintechapp --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN'
+	  	   sh 'docker run -t schoolofdevops/argocd-cli argocd app wait nexusfintechapp --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN'
          }
       }
     }
