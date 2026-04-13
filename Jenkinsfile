@@ -2,7 +2,7 @@ pipeline {
   environment {
     ARGO_SERVER = 'argocd-server.argocd.svc.cluster.local:443'
     GITHUB_TOKEN = credentials('github_jenkins_token')
-    DEV_URL = 'http://158.158.43.58:30080/'
+    DEV_URL = 'http://{IP_ADDRESS}:30080/'
   }
   agent {
     kubernetes {
