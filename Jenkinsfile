@@ -17,7 +17,14 @@ pipeline {
         stage('Secret Scanner') {
           steps {
             container('trufflehog') {
-              sh 'trufflehog --regex --entropy .'
+              sh '''
+				  trufflehog --regex --entropy file://`pwd` > secrets.txt
+				  cat secrets.txt
+				  if grep -q "~~~~~~~~~~~~~~~~" secrets.txt; then
+				    echo "Secrets found in repository!"
+				    exit 1
+				  fi
+				'''
             }
           }
         }
