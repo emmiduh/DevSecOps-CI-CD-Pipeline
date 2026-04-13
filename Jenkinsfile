@@ -139,7 +139,7 @@ pipeline {
     stage('Scan k8s Deploy Code') {
       steps {
 	container('docker-tools') {
-	  sh 'kubesec scan deploy/dso-demo-deploy.yaml'
+	  sh 'curl -sSX POST --data-binary @"deploy/dso-demo-deploy.yaml" https://v2.kubesec.io/scan'
 	}
       }
     }
