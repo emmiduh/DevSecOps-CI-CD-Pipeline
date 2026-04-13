@@ -2,7 +2,7 @@ pipeline {
   environment {
     ARGO_SERVER = '158.158.43.58:32100'
     GITHUB_TOKEN = credentials('github_jenkins_token')
-    // DEV_URL = 'http://10.168.20.128:9080/'
+    DEV_URL = 'http://158.158.43.58:30080/'
   }
   agent {
     kubernetes {
@@ -122,14 +122,14 @@ pipeline {
         stage('Image Linting') {
 	  steps {
 	    container('docker-tools') {
-	      sh 'dockle --timeout 600s docker.io/emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
+	      sh "dockle --timeout 600s docker.io/emmiduh93/nexus-fintech:${env.BUILD_NUMBER}"
 	    }
 	  }
 	}
 	stage('Image Scan') {
 	  steps {
 	    container('docker-tools') {
-	      sh 'trivy image --timeout 10m --exit-code 1 emmiduh93/nexus-fintech:${env.BUILD_NUMBER}'
+	      sh "trivy image --timeout 10m --exit-code 1 emmiduh93/nexus-fintech:${env.BUILD_NUMBER}"
 	    }
 	  }
 	}
@@ -157,21 +157,21 @@ pipeline {
       }
     }
     
- //    stage('Dynamic Analysis') {
- //      parallel {
- //        stage('E2E tests') {
- //          steps {
- //            sh 'echo "All Tests passed!!!"'
- //          }
- //        }
- //        stage('Dynamic Application Security Testing') {
- //          steps {
- //            container('docker-tools') {
- //              sh 'docker run -t owasp/zap2docker-stable zap-baseline.py -t $DEV_URL || exit 0'
-	//     }
-	//   }
-	// }
- //      }
-    // }
+    stage('Dynamic Analysis') {
+      parallel {
+        stage('E2E tests') {
+          steps {
+            sh 'echo "All Tests passed!!!"'
+          }
+        }
+        stage('Dynamic Application Security Testing') {
+          steps {
+            container('docker-tools') {
+              sh 'docker run -t owasp/zap2docker-stable zap-baseline.py -t $DEV_URL || exit 0'
+	    }
+	  }
+	}
+      }
+    }
   }
 }
