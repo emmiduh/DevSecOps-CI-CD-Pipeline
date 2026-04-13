@@ -17,7 +17,7 @@ spec:
       annotations:
         vault.hashicorp.com/agent-inject: 'true'
         vault.hashicorp.com/role: 'dso-demo'
-        vault.hashicorp.com/agent-inject-secret-database: 'secret/dso-demo/database'
+        vault.hashicorp.com/agent-inject-secret-database: 'secret/data/dso-demo/database'
         vault.hashicorp.com/agent-inject-status: 'update'
         vault.hashicorp.com/agent-inject-template-database: |
           {{- with secret "secret/dso-demo/database" -}}
@@ -55,3 +55,20 @@ spec:
             cpu: "250m"
             memory: "256Mi"
 status: {}
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nexusfintechapp-monitor
+  namespace: dev
+  labels:
+    release: prom-stack # Must match the Helm release name
+spec:
+  selector:
+    matchLabels:
+      app: dso-demo
+  endpoints:
+  - port: 8080 # The port your app runs on internally
+    path: /actuator/prometheus
+    interval: 15s
