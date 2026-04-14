@@ -4,15 +4,25 @@ metadata:
   name: prometheus-grafana
   namespace: argocd
 spec:
-  project: default
+  project: monitoring
   source:
-    chart: kube-prometheus-stack
-    repoURL: https://prometheus-community.github.io/helm-charts
-    targetRevision: 57.0.3 
-    helm:
-      releaseName: prom-stack
+    repoURL: 'https://github.com/emmiduh/DevSecOps-CI-CD-Pipeline.git'
+    path: deploy
+    targetRevision: HEAD
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        # This tells the plugin where your Vault lives inside the cluster
+        - name: AVP_TYPE
+          value: vault
+        - name: VAULT_ADDR
+          value: http://vault.vault.svc:8200
+        - name: AVP_AUTH_TYPE
+          value: k8s
+        - name: AVP_K8S_ROLE
+          value: argocd-monitoring-role
   destination:
-    server: https://kubernetes.default.svc
+    server: 'https://kubernetes.default.svc'
     namespace: monitoring
   syncPolicy:
     automated:
