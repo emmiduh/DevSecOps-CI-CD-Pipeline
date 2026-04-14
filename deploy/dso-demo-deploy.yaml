@@ -69,6 +69,6 @@ spec:
     matchLabels:
       app: dso-demo
   endpoints:
-  - port: 8080 # The port your app runs on internally
+  - port: http-metrics
     path: /actuator/prometheus
     interval: 15s

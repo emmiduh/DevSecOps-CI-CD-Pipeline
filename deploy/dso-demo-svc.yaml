@@ -7,7 +7,7 @@ metadata:
   name: nexusfintechapp
 spec:
   ports:
-  - name: "8080"
+  - name: http-metrics
     nodePort: 30080
     port: 8080
     protocol: TCP
