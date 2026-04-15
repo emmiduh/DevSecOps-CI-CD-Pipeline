@@ -169,18 +169,18 @@ pipeline {
       steps {
 		  sh "echo done"
          container('docker-tools') {
-           sh '''
-             echo "Downloading ArgoCD CLI..."
-             curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-             chmod +x argocd
+            sh '''
+              echo "Downloading ArgoCD CLI..."
+              curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+              chmod +x argocd
 
-             echo "Syncing Application..."
-             ./argocd app sync nexusfintechapp --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
-             
-             echo "Waiting for Health Status..."
-             ./argocd app wait nexusfintechapp --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
-           '''
-         }
+              echo "Triggering Git Refresh..."
+              ./argocd app get nexusfintechapp --refresh --hard --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN || true
+              
+              echo "Waiting for Automated Sync and Health Status..."
+              ./argocd app wait nexusfintechapp --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
+            '''
+          }
       }
     }
     
