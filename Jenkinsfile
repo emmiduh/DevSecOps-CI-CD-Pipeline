@@ -166,22 +166,33 @@ pipeline {
        environment {
          AUTH_TOKEN = credentials('argocd-jenkins-deployer-token')  
        }
-      steps {
-		  sh "echo done"
-         container('docker-tools') {
-            sh '''
-              echo "Downloading ArgoCD CLI..."
-              curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-              chmod +x argocd
+    //   steps {
+		  // sh "echo done"
+    //      container('docker-tools') {
+    //         sh '''
+    //           echo "Downloading ArgoCD CLI..."
+    //           curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+    //           chmod +x argocd
 
-              echo "Triggering Git Refresh..."
-              ./argocd app get nexusfintechapp --refresh --hard --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN || true
+    //           echo "Triggering Git Refresh..."
+    //           ./argocd app get nexusfintechapp --refresh --hard --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN || true
               
-              echo "Waiting for Automated Sync and Health Status..."
-              ./argocd app wait nexusfintechapp --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
-            '''
-          }
-      }
+    //           echo "Waiting for Automated Sync and Health Status..."
+    //           ./argocd app wait nexusfintechapp --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
+    //         '''
+    //       }
+    //   }
+		steps {
+            container('argocd-cli') {
+                sh '''
+                    echo "Triggering Git Refresh..."
+                    argocd app get nexusfintechapp --hard-refresh --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN || true
+                    
+                    echo "Waiting for Automated Sync and Health Status..."
+                    argocd app wait nexusfintechapp --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
+                '''
+            }
+        }
     }
     
     stage('Dynamic Analysis') {
