@@ -129,8 +129,10 @@ pipeline {
 	stage('Image Scan') {
 	  steps {
 	    container('docker-tools') {
-		  trivy image --clear-cache
-	      sh "GITHUB_TOKEN= trivy image --timeout 20m --exit-code 1 emmiduh93/nexus-fintech:${env.BUILD_NUMBER}"
+		  sh '''
+  			trivy image --clear-cache
+  			GITHUB_TOKEN= trivy image --timeout 20m --exit-code 1 emmiduh93/nexus-fintech:39
+		  '''
 	    }
 	  }
 	}
