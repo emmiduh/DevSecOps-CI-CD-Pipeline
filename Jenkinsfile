@@ -155,9 +155,8 @@ pipeline {
             container('argocd-cli') {
                 sh '''
                     echo "Triggering Git Refresh..."
-                    argocd app get nexusfintechapp --hard-refresh --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN || true
-                    
-                    echo "Waiting for Automated Sync and Health Status..."
+                    argocd app sync nexusfintechapp --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
+                    echo "Waiting for  Health Status..."
                     argocd app wait nexusfintechapp --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
                 '''
             }
