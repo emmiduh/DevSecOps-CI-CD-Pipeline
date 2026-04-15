@@ -110,7 +110,7 @@ pipeline {
         stage('OCI Image BnP') {
           steps {
             container('kaniko') {
-              sh "/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/emmiduh93/nexus-fintech:${env.BUILD_NUMBER}"
+              sh "/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/emmiduh93/nexus-fintech"
             }
           }
         }
@@ -122,7 +122,7 @@ pipeline {
         stage('Image Linting') {
 	  steps {
 	    container('docker-tools') {
-	      sh "dockle --timeout 600s docker.io/emmiduh93/nexus-fintech:${env.BUILD_NUMBER}"
+	      sh "dockle --timeout 600s docker.io/emmiduh93/nexus-fintech"
 	    }
 	  }
 	}
@@ -147,42 +147,11 @@ pipeline {
       }
     }
 
-	stage('Update GitOps Repo') {
-      steps {
-        container('docker-tools') {
-          sh '''
-            sed -i "s|image: emmiduh93/nexus-fintech:.*|image: emmiduh93/nexus-fintech:${BUILD_NUMBER}|g" deploy/dso-demo-deploy.yaml
-            git config user.email "jenkins-bot@example.com"
-            git config user.name "Jenkins CI Bot"
-            git add deploy/dso-demo-deploy.yaml
-            git commit -m "chore: update image tag to ${BUILD_NUMBER} [skip ci]"
-            git push https://${GITHUB_TOKEN}@github.com/emmiduh/DevSecOps-CI-CD-Pipeline.git HEAD:main
-          '''
-        }
-      }
-    }
-
-    stage('Deploy to Dev') {
+	stage('Deploy to Dev') {
        environment {
          AUTH_TOKEN = credentials('argocd-jenkins-deployer-token')  
        }
-    //   steps {
-		  // sh "echo done"
-    //      container('docker-tools') {
-    //         sh '''
-    //           echo "Downloading ArgoCD CLI..."
-    //           curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-    //           chmod +x argocd
-
-    //           echo "Triggering Git Refresh..."
-    //           ./argocd app get nexusfintechapp --refresh --hard --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN || true
-              
-    //           echo "Waiting for Automated Sync and Health Status..."
-    //           ./argocd app wait nexusfintechapp --health --timeout 300 --insecure --server $ARGO_SERVER --auth-token $AUTH_TOKEN
-    //         '''
-    //       }
-    //   }
-		steps {
+       steps {
             container('argocd-cli') {
                 sh '''
                     echo "Triggering Git Refresh..."
