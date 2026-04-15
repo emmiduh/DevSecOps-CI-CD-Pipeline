@@ -11,16 +11,6 @@ spec:
     targetRevision: main
     plugin:
       name: argocd-vault-plugin-helm
-      env:
-        # This tells the plugin where your Vault lives inside the cluster
-        - name: AVP_TYPE
-          value: vault
-        - name: VAULT_ADDR
-          value: http://vault.vault.svc:8200
-        - name: AVP_AUTH_TYPE
-          value: k8s
-        - name: AVP_K8S_ROLE
-          value: argocd-monitoring-role
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
