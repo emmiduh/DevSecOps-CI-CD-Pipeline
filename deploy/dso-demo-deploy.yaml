@@ -32,7 +32,7 @@ spec:
         - name: tmp
           emptyDir: {}
       containers:
-      - image: emmiduh93/nexus-fintech:37
+      - image: emmiduh93/nexus-fintech:41
         name: dso-demo
         volumeMounts:
           - name: tmp
