@@ -110,6 +110,9 @@ Hint: URL (if you have followed the exact steps) http://dependency-track-apiserv
 ##### ArgCD Dashboard
 ![Stage View](imgs/Secure_Pipeline_2.png)
 
+##### Grafana Dashboard
+![Pipeline View](imgs/Monitoring_Dashboard.png)
+
 ##### Dependency Track
 ![Dependency Track View](imgs/Dependency_Track.png)
 
