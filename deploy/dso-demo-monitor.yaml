@@ -12,4 +12,4 @@ spec:
       app: dso-demo 
   endpoints:
   - port: "8080" 
-    path: /metrics
+    path: /actuator/prometheus
