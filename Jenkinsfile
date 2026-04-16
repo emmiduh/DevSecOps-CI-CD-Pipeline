@@ -110,7 +110,7 @@ pipeline {
         stage('OCI Image BnP') {
           steps {
             container('kaniko') {
-              sh "/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/emmiduh93/nexus-fintech"
+              sh "/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/emmiduh93/nexus-fintech:${BUILD_NUMBER}"
             }
           }
         }
@@ -120,22 +120,22 @@ pipeline {
     stage('Image Analysis') {
       parallel {
         stage('Image Linting') {
-	  steps {
-	    container('docker-tools') {
-	      sh "dockle --timeout 600s docker.io/emmiduh93/nexus-fintech"
-	    }
-	  }
-	}
+          steps {
+            container('docker-tools') {
+              sh "dockle --timeout 600s docker.io/emmiduh93/nexus-fintech:${BUILD_NUMBER}"
+            }
+          }
+        }
 	stage('Image Scan') {
-	  steps {
-	    container('docker-tools') {
-		  sh '''
-  			trivy image --clear-cache
-  			GITHUB_TOKEN= trivy image --timeout 20m --exit-code 1 emmiduh93/nexus-fintech:39
-		  '''
-	    }
-	  }
-	}
+          steps {
+            container('docker-tools') {
+              sh """
+                trivy image --clear-cache
+                GITHUB_TOKEN= trivy image --timeout 20m --exit-code 1 emmiduh93/nexus-fintech:${BUILD_NUMBER}
+              """
+            }
+          }
+        }
       }
     }
 
