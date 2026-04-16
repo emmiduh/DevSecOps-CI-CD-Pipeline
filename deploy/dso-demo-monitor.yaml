@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nexusfintechapp-monitor
+  namespace: dev
+spec:
+  namespaceSelector:
+    matchNames:
+      - dev
+  selector:
+    matchLabels:
+      app: dso-demo 
+  endpoints:
+  - port: "8080" 
+    path: /metrics
