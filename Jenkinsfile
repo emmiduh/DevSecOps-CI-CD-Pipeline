@@ -146,7 +146,23 @@ pipeline {
 	}
       }
     }
+	stage('Update Manifests in Git') {
+      steps {
+        container('docker-tools') {
+          sh """
+            echo "Updating deployment manifest with new image tag: \${BUILD_NUMBER}"
 
+            # 1. Find the old image line and replace it with the new build number
+            sed -i "s|image: emmiduh93/nexus-fintech:.*|image: emmiduh93/nexus-fintech:\${BUILD_NUMBER}|g" deploy/dso-demo-deploy.yaml
+            git config --global user.email "jenkins@devsecops.local"
+            git config --global user.name "Jenkins Automation"
+            git add deploy/dso-demo-deploy.yaml
+            git commit -m "Update image tag to build \${BUILD_NUMBER} [skip ci]" || echo "No changes to commit"
+            git push https://\${GITHUB_TOKEN}@github.com/emmiduh/DevSecOps-CI-CD-Pipeline.git HEAD:main
+          """
+        }
+      }
+    }
 	stage('Deploy to Dev') {
        environment {
          AUTH_TOKEN = credentials('argocd-jenkins-deployer-token')  
